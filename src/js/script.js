@@ -5,6 +5,15 @@ class SubscriptionManager {
         // Exchange rate settings (relative to Malaysian Ringgit)
         this.exchangeRates = this.loadExchangeRates();
         this.lastRateUpdate = this.getLastRateUpdate();
+        
+        // Check if cached USD rate looks incorrect (like 1.00) and clear cache if so
+        if (this.exchangeRates.USD && this.exchangeRates.USD < 2.0) {
+            console.log('Detected incorrect USD exchange rate, clearing cache and using defaults');
+            localStorage.removeItem('exchangeRates');
+            localStorage.removeItem('lastRateUpdate');
+            this.exchangeRates = this.loadExchangeRates();
+            this.lastRateUpdate = null;
+        }
         this.database = null;
         this.userId = window.ENV?.VITE_DEFAULT_USER_ID || 'default-user'; // Simple user identifier, should use Firebase Auth in production
         
@@ -12,6 +21,21 @@ class SubscriptionManager {
         
         // Initialize UI and event binding immediately
         this.init();
+        
+        // Add refresh rates button event listener
+        document.addEventListener('DOMContentLoaded', () => {
+            const refreshButton = document.getElementById('refresh-rates');
+            if (refreshButton) {
+                refreshButton.addEventListener('click', () => {
+                    refreshButton.textContent = 'Updating...';
+                    refreshButton.disabled = true;
+                    this.forceUpdateExchangeRates().finally(() => {
+                        refreshButton.textContent = 'Refresh Rates';
+                        refreshButton.disabled = false;
+                    });
+                });
+            }
+        });
         
         // Load data asynchronously
         this.loadData();
@@ -214,8 +238,8 @@ class SubscriptionManager {
         const saved = localStorage.getItem('exchangeRates');
         return saved ? JSON.parse(saved) : {
             'MYR': 1.0,
-            'USD': 4.7,  // Default exchange rates
-            'CNY': 0.65  // Default exchange rates
+            'USD': 4.5,  // Default: 1 USD = 4.5 MYR (updated default)
+            'CNY': 0.65  // Default: 1 CNY = 0.65 MYR
         };
     }
 
@@ -256,11 +280,17 @@ class SubscriptionManager {
             const data = await response.json();
             
             // Update exchange rates (convert to rates relative to MYR)
+            // API returns rates from MYR to other currencies, so we need to invert for USD/CNY to MYR
+            const usdRate = data.rates.USD ? (1 / data.rates.USD) : 4.5;
+            const cnyRate = data.rates.CNY ? (1 / data.rates.CNY) : 0.65;
+            
             this.exchangeRates = {
                 'MYR': 1.0,
-                'USD': 1 / data.rates.USD,  // 1 USD = ? MYR
-                'CNY': 1 / data.rates.CNY   // 1 CNY = ? MYR
+                'USD': usdRate,  // 1 USD = ? MYR
+                'CNY': cnyRate   // 1 CNY = ? MYR
             };
+            
+            console.log('Updated exchange rates:', this.exchangeRates);
             
             this.saveExchangeRates();
             this.lastRateUpdate = new Date().toISOString();
@@ -325,11 +355,17 @@ class SubscriptionManager {
              const data = await response.json();
              
              // Update exchange rates (convert to rates relative to MYR)
+             // API returns rates from MYR to other currencies, so we need to invert for USD/CNY to MYR
+             const usdRate = data.rates.USD ? (1 / data.rates.USD) : 4.5;
+             const cnyRate = data.rates.CNY ? (1 / data.rates.CNY) : 0.65;
+             
              this.exchangeRates = {
                  'MYR': 1.0,
-                 'USD': 1 / data.rates.USD,  // 1 USD = ? MYR
-                 'CNY': 1 / data.rates.CNY   // 1 CNY = ? MYR
+                 'USD': usdRate,  // 1 USD = ? MYR
+                 'CNY': cnyRate   // 1 CNY = ? MYR
              };
+             
+             console.log('Updated exchange rates:', this.exchangeRates);
              
              this.saveExchangeRates();
              this.lastRateUpdate = new Date().toISOString();

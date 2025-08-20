@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subscription Manager - Financial Expense Control</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="src/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Environment variables will be loaded from env.js -->
     <script src="env.js"></script>
@@ -14,7 +14,12 @@
         <header class="header">
             <h1><i class="fas fa-credit-card"></i> Subscription Manager</h1>
             <p class="subtitle">Control Your Monthly Financial Expenses</p>
-            <div class="exchange-rate-info" id="exchangeRateInfo"></div>
+            <div class="exchange-rate-info" id="exchangeRateInfo">
+                <span class="rate-item">1 USD = RM <span id="usd-rate">4.50</span></span>
+                <span class="rate-item">1 CNY = RM <span id="cny-rate">0.65</span></span>
+                <span class="last-updated">Last updated: <span id="last-updated">Never</span></span>
+                <button id="refresh-rates" style="margin-left: 10px; padding: 2px 8px; font-size: 12px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Refresh Rates</button>
+            </div>
         </header>
 
         <div class="dashboard">
@@ -258,6 +263,6 @@
     </script>
     
     <!-- Load main script after Firebase initialization -->
-    <script src="script.js"></script>
+    <script src="src/js/script.js"></script>
 </body>
 </html>
