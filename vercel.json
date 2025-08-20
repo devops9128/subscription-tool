@@ -11,14 +11,15 @@
           "value": "public, max-age=0, must-revalidate"
         }
       ]
-    }
-  ],
-  "routes": [
+    },
     {
-      "src": "/env.js",
-      "headers": {
-        "Cache-Control": "public, max-age=300"
-      }
+      "source": "/env.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=300"
+        }
+      ]
     }
   ]
 }
