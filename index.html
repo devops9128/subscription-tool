@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Manager - Financial Expense Control</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-credit-card"></i> Subscription Manager</h1>
+            <p class="subtitle">Control Your Monthly Financial Expenses</p>
+            <div class="exchange-rate-info" id="exchangeRateInfo"></div>
+        </header>
+
+        <div class="dashboard">
+            <div class="stats-grid">
+                <div class="stat-card total">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Monthly Total Expense</h3>
+                        <p class="stat-value" id="totalExpense">¥0</p>
+                    </div>
+                </div>
+                <div class="stat-card count">
+                    <div class="stat-icon">
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Subscription Count</h3>
+                        <p class="stat-value" id="subscriptionCount">0</p>
+                    </div>
+                </div>
+                <div class="stat-card average">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Average Cost</h3>
+                        <p class="stat-value" id="averageExpense">¥0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="controls">
+                <div class="left-controls">
+                    <button class="btn btn-primary" id="addSubscriptionBtn">
+                        <i class="fas fa-plus"></i> Add Subscription
+                    </button>
+                    <button class="btn btn-secondary" id="updateRatesBtn">
+                        <i class="fas fa-sync-alt"></i> Update Exchange Rates
+                    </button>
+
+                </div>
+                <div class="filter-controls">
+                    <select id="categoryFilter">
+                        <option value="all">All Categories</option>
+                        <option value="streaming">Streaming</option>
+                        <option value="software">Software</option>
+                        <option value="cloud">Cloud Services</option>
+                        <option value="gaming">Gaming</option>
+                        <option value="education">Education</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <select id="statusFilter">
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                    <input type="text" id="searchInput" placeholder="Search subscriptions...">
+                </div>
+            </div>
+
+            <div class="subscriptions-grid" id="subscriptionsGrid">
+                <!-- Subscription cards will be dynamically generated here -->
+            </div>
+            
+
+        </div>
+    </div>
+
+    <!-- Add/Edit Subscription Modal -->
+    <div class="modal" id="subscriptionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Subscription</h2>
+                <button class="close-btn" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="subscriptionForm">
+                <div class="form-group">
+                    <label for="serviceName">Service Name</label>
+                    <input type="text" id="serviceName" required>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" required>
+                        <option value="streaming">Streaming</option>
+                        <option value="software">Software</option>
+                        <option value="cloud">Cloud Services</option>
+                        <option value="gaming">Gaming</option>
+                        <option value="education">Education</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="currency">Currency</label>
+                    <select id="currency" required>
+                        <option value="MYR">Malaysian Ringgit (RM)</option>
+                        <option value="USD">US Dollar ($)</option>
+                        <option value="CNY">Chinese Yuan (¥)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="status">Subscription Status</label>
+                    <select id="status" required>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="monthlyPrice">Monthly Price</label>
+                    <input type="number" id="monthlyPrice" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="billingCycle">Billing Cycle</label>
+                    <select id="billingCycle">
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                        <option value="quarterly">Quarterly</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="nextBilling">Next Billing Date</label>
+                    <input type="date" id="nextBilling" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description (Optional)</label>
+                    <textarea id="description" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        
+        // Firebase configuration - Demo configuration (Please replace with your Firebase project configuration)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDl2WSk8Xj7X63cOyqJVTb2YICYlIL1I9o",
+            authDomain: "subscription-apps-demo.firebaseapp.com",
+            databaseURL: "https://subscription-apps-demo-default-rtdb.asia-southeast1.firebasedatabase.app/",
+            projectId: "subscription-apps-demo",
+            storageBucket: "subscription-apps-demo.firebasestorage.app",
+            messagingSenderId: "707083000716",
+            appId: "1:707083000716:web:bc36622a201049134f54a9",
+            measurementId: "G-9HE0557ZF1"
+        };
+        
+        try {
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const database = getDatabase(app);
+            
+            // Expose Firebase instances to global scope
+            window.firebaseApp = app;
+            window.firebaseDatabase = database;
+            window.firebaseInitialized = true;
+            
+            console.log('Firebase initialization completed, database instance:', database);
+            
+            // Trigger custom event to notify Firebase is initialized
+            window.dispatchEvent(new CustomEvent('firebaseReady'));
+        } catch (error) {
+            console.error('Firebase initialization failed:', error);
+            window.firebaseInitialized = false;
+            window.firebaseError = error;
+        }
+    </script>
+    
+    <!-- Load main script after Firebase initialization -->
+    <script src="script.js"></script>
+</body>
+</html>
