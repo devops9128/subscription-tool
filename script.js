@@ -243,7 +243,11 @@ class SubscriptionManager {
             this.showRateUpdateStatus('Updating exchange rates...');
             
             // Use free exchange rate API (exchangerate-api.com)
-            const response = await fetch('https://api.exchangerate-api.com/v4/latest/MYR');
+            const apiUrl = window.ENV?.VITE_EXCHANGE_RATE_API_URL;
+            if (!apiUrl) {
+                throw new Error('Exchange rate API URL not configured');
+            }
+            const response = await fetch(apiUrl);
             
             if (!response.ok) {
                 throw new Error('Exchange rate API request failed');
@@ -308,7 +312,10 @@ class SubscriptionManager {
              this.showRateUpdateStatus('Updating exchange rates...');
              
              // Use free exchange rate API (exchangerate-api.com)
-             const apiUrl = window.ENV?.VITE_EXCHANGE_RATE_API_URL || 'https://api.exchangerate-api.com/v4/latest/MYR';
+            const apiUrl = window.ENV?.VITE_EXCHANGE_RATE_API_URL;
+            if (!apiUrl) {
+                throw new Error('Exchange rate API URL not configured');
+            }
              const response = await fetch(apiUrl);
              
              if (!response.ok) {

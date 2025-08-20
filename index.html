@@ -6,6 +6,7 @@
     <title>Subscription Manager - Financial Expense Control</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Environment variables will be loaded from env.js -->
     <script src="env.js"></script>
 </head>
 <body>
@@ -161,16 +162,16 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getDatabase } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
         
-        // Firebase configuration - Using environment variables or fallback values
+        // Firebase configuration - Using environment variables only
         const firebaseConfig = {
-            apiKey: window.ENV?.VITE_FIREBASE_API_KEY || "AIzaSyDl2WSk8Xj7X63cOyqJVTb2YICYlIL1I9o",
-            authDomain: window.ENV?.VITE_FIREBASE_AUTH_DOMAIN || "subscription-apps-demo.firebaseapp.com",
-            databaseURL: window.ENV?.VITE_FIREBASE_DATABASE_URL || "https://subscription-apps-demo-default-rtdb.asia-southeast1.firebasedatabase.app/",
-            projectId: window.ENV?.VITE_FIREBASE_PROJECT_ID || "subscription-apps-demo",
-            storageBucket: window.ENV?.VITE_FIREBASE_STORAGE_BUCKET || "subscription-apps-demo.firebasestorage.app",
-            messagingSenderId: window.ENV?.VITE_FIREBASE_MESSAGING_SENDER_ID || "707083000716",
-            appId: window.ENV?.VITE_FIREBASE_APP_ID || "1:707083000716:web:bc36622a201049134f54a9",
-            measurementId: window.ENV?.VITE_FIREBASE_MEASUREMENT_ID || "G-9HE0557ZF1"
+            apiKey: window.ENV?.VITE_FIREBASE_API_KEY,
+            authDomain: window.ENV?.VITE_FIREBASE_AUTH_DOMAIN,
+            databaseURL: window.ENV?.VITE_FIREBASE_DATABASE_URL,
+            projectId: window.ENV?.VITE_FIREBASE_PROJECT_ID,
+            storageBucket: window.ENV?.VITE_FIREBASE_STORAGE_BUCKET,
+            messagingSenderId: window.ENV?.VITE_FIREBASE_MESSAGING_SENDER_ID,
+            appId: window.ENV?.VITE_FIREBASE_APP_ID,
+            measurementId: window.ENV?.VITE_FIREBASE_MEASUREMENT_ID
         };
         
         try {

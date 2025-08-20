@@ -4,3 +4,34 @@ dist
 .git
 .trae
 .log
+
+# Environment and configuration files
+.env*
+!.env.example
+env.js
+config.js
+
+# API keys and secrets
+*.key
+*.pem
+*.p12
+*.pfx
+secrets.json
+api-keys.json
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+.firebaserc
+firebase.json
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.backup
+*.bak
+*.orig

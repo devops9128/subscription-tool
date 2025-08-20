@@ -1,16 +1,4 @@
 {
-  "buildCommand": "node -e \"const fs = require('fs'); const envContent = \`window.ENV = {\n  VITE_FIREBASE_API_KEY: '${process.env.VITE_FIREBASE_API_KEY || 'AIzaSyDl2WSk8Xj7X63cOyqJVTb2YICYlIL1I9o'}',\n  VITE_FIREBASE_AUTH_DOMAIN: '${process.env.VITE_FIREBASE_AUTH_DOMAIN || 'subscription-apps-demo.firebaseapp.com'}',\n  VITE_FIREBASE_DATABASE_URL: '${process.env.VITE_FIREBASE_DATABASE_URL || 'https://subscription-apps-demo-default-rtdb.asia-southeast1.firebasedatabase.app/'}',\n  VITE_FIREBASE_PROJECT_ID: '${process.env.VITE_FIREBASE_PROJECT_ID || 'subscription-apps-demo'}',\n  VITE_FIREBASE_STORAGE_BUCKET: '${process.env.VITE_FIREBASE_STORAGE_BUCKET || 'subscription-apps-demo.firebasestorage.app'}',\n  VITE_FIREBASE_MESSAGING_SENDER_ID: '${process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '707083000716'}',\n  VITE_FIREBASE_APP_ID: '${process.env.VITE_FIREBASE_APP_ID || '1:707083000716:web:bc36622a201049134f54a9'}',\n  VITE_FIREBASE_MEASUREMENT_ID: '${process.env.VITE_FIREBASE_MEASUREMENT_ID || 'G-9HE0557ZF1'}',\n  VITE_EXCHANGE_RATE_API_URL: '${process.env.VITE_EXCHANGE_RATE_API_URL || 'https://api.exchangerate-api.com/v4/latest/MYR'}',\n  VITE_DEFAULT_USER_ID: '${process.env.VITE_DEFAULT_USER_ID || 'default-user'}'\n};\`; fs.writeFileSync('env.js', envContent);\"",
-  "outputDirectory": ".",
-  "framework": null,
-  "installCommand": "echo 'No install step required'",
-  "devCommand": "python -m http.server 8000",
-  "functions": {},
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
