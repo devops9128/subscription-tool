@@ -162,36 +162,98 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getDatabase } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
         
-        // Firebase configuration - Using environment variables only
-        const firebaseConfig = {
-            apiKey: window.ENV?.VITE_FIREBASE_API_KEY,
-            authDomain: window.ENV?.VITE_FIREBASE_AUTH_DOMAIN,
-            databaseURL: window.ENV?.VITE_FIREBASE_DATABASE_URL,
-            projectId: window.ENV?.VITE_FIREBASE_PROJECT_ID,
-            storageBucket: window.ENV?.VITE_FIREBASE_STORAGE_BUCKET,
-            messagingSenderId: window.ENV?.VITE_FIREBASE_MESSAGING_SENDER_ID,
-            appId: window.ENV?.VITE_FIREBASE_APP_ID,
-            measurementId: window.ENV?.VITE_FIREBASE_MEASUREMENT_ID
-        };
+        // Check if environment variables are loaded
+        function checkEnvironmentVariables() {
+            console.log('Checking environment variables...');
+            console.log('window.ENV:', window.ENV);
+            
+            if (!window.ENV) {
+                throw new Error('Environment variables not loaded. Please check if env.js is properly loaded.');
+            }
+            
+            const requiredVars = [
+                'VITE_FIREBASE_API_KEY',
+                'VITE_FIREBASE_AUTH_DOMAIN', 
+                'VITE_FIREBASE_DATABASE_URL',
+                'VITE_FIREBASE_PROJECT_ID'
+            ];
+            
+            const missingVars = requiredVars.filter(varName => !window.ENV[varName]);
+            
+            if (missingVars.length > 0) {
+                throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+            }
+            
+            console.log('✅ All required environment variables are present');
+            return true;
+        }
         
-        try {
-            // Initialize Firebase
-            const app = initializeApp(firebaseConfig);
-            const database = getDatabase(app);
-            
-            // Expose Firebase instances to global scope
-            window.firebaseApp = app;
-            window.firebaseDatabase = database;
-            window.firebaseInitialized = true;
-            
-            console.log('Firebase initialization completed, database instance:', database);
-            
-            // Trigger custom event to notify Firebase is initialized
-            window.dispatchEvent(new CustomEvent('firebaseReady'));
-        } catch (error) {
-            console.error('Firebase initialization failed:', error);
-            window.firebaseInitialized = false;
-            window.firebaseError = error;
+        // Firebase configuration - Using environment variables only
+        function getFirebaseConfig() {
+            return {
+                apiKey: window.ENV.VITE_FIREBASE_API_KEY,
+                authDomain: window.ENV.VITE_FIREBASE_AUTH_DOMAIN,
+                databaseURL: window.ENV.VITE_FIREBASE_DATABASE_URL,
+                projectId: window.ENV.VITE_FIREBASE_PROJECT_ID,
+                storageBucket: window.ENV.VITE_FIREBASE_STORAGE_BUCKET,
+                messagingSenderId: window.ENV.VITE_FIREBASE_MESSAGING_SENDER_ID,
+                appId: window.ENV.VITE_FIREBASE_APP_ID,
+                measurementId: window.ENV.VITE_FIREBASE_MEASUREMENT_ID
+            };
+        }
+        
+        // Initialize Firebase with error handling
+        async function initializeFirebase() {
+            try {
+                // Check environment variables first
+                checkEnvironmentVariables();
+                
+                // Get Firebase configuration
+                const firebaseConfig = getFirebaseConfig();
+                console.log('Firebase config loaded:', {
+                    ...firebaseConfig,
+                    apiKey: firebaseConfig.apiKey ? '***' + firebaseConfig.apiKey.slice(-4) : 'missing'
+                });
+                
+                // Initialize Firebase
+                console.log('Initializing Firebase...');
+                const app = initializeApp(firebaseConfig);
+                const database = getDatabase(app);
+                
+                // Test database connection
+                console.log('Testing database connection...');
+                
+                // Expose Firebase instances to global scope
+                window.firebaseApp = app;
+                window.firebaseDatabase = database;
+                window.firebaseInitialized = true;
+                window.firebaseError = null;
+                
+                console.log('✅ Firebase initialization completed successfully');
+                
+                // Trigger custom event to notify Firebase is initialized
+                window.dispatchEvent(new CustomEvent('firebaseReady'));
+                
+            } catch (error) {
+                console.error('❌ Firebase initialization failed:', error);
+                window.firebaseInitialized = false;
+                window.firebaseError = error;
+                
+                // Show user-friendly error message
+                const errorMessage = `Firebase initialization failed: ${error.message}`;
+                console.error(errorMessage);
+                
+                // Trigger error event
+                window.dispatchEvent(new CustomEvent('firebaseError', { detail: error }));
+            }
+        }
+        
+        // Wait for DOM and env.js to load, then initialize Firebase
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeFirebase);
+        } else {
+            // If DOM is already loaded, wait a bit for env.js to load
+            setTimeout(initializeFirebase, 100);
         }
     </script>
     

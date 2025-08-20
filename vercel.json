@@ -1,4 +1,7 @@
 {
+  "buildCommand": "node build-env.js",
+  "outputDirectory": ".",
+  "framework": null,
   "headers": [
     {
       "source": "/(.*)",
@@ -8,6 +11,14 @@
           "value": "public, max-age=0, must-revalidate"
         }
       ]
+    }
+  ],
+  "routes": [
+    {
+      "src": "/env.js",
+      "headers": {
+        "Cache-Control": "public, max-age=300"
+      }
     }
   ]
 }
