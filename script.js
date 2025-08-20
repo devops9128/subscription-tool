@@ -860,6 +860,10 @@ if (document.readyState === 'loading') {
 // Add CSS styles for overdue and upcoming billing reminders
 const style = document.createElement('style');
 style.textContent = `
+    .next-billing {
+        margin-top: 15px;
+    }
+    
     .next-billing.overdue {
         background: #ffebee;
         color: #c62828;
