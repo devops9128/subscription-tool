@@ -6,7 +6,7 @@ class SubscriptionManager {
         this.exchangeRates = this.loadExchangeRates();
         this.lastRateUpdate = this.getLastRateUpdate();
         this.database = null;
-        this.userId = 'default-user'; // Simple user identifier, should use Firebase Auth in production
+        this.userId = window.ENV?.VITE_DEFAULT_USER_ID || 'default-user'; // Simple user identifier, should use Firebase Auth in production
         
         console.log('SubscriptionManager constructor started');
         
@@ -308,7 +308,8 @@ class SubscriptionManager {
              this.showRateUpdateStatus('Updating exchange rates...');
              
              // Use free exchange rate API (exchangerate-api.com)
-             const response = await fetch('https://api.exchangerate-api.com/v4/latest/MYR');
+             const apiUrl = window.ENV?.VITE_EXCHANGE_RATE_API_URL || 'https://api.exchangerate-api.com/v4/latest/MYR';
+             const response = await fetch(apiUrl);
              
              if (!response.ok) {
                  throw new Error('Exchange rate API request failed');
